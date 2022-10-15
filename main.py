@@ -117,6 +117,7 @@ while run:
                 if not last_correct:
                     quiz_queue.insert(2, quiz_queue[0])
                 quiz_queue.pop(0)
+            random.shuffle(quiz_queue[0][2])
             print([q[0] for q in quiz_queue])
 
         if timer != -1:
