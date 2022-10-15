@@ -64,6 +64,16 @@ def new_learn():
         quiz_queue.append(quiz[i])
 
 
+def guess(option):
+    global quiz_queue, timer, last_correct
+    if option == quiz_queue[0][1]:
+        timer = 10
+        last_correct = True
+    else:
+        timer = -1
+        last_correct = False
+
+
 pre_mouse_press = (False, False, False)
 font = pygame.font.SysFont('ubuntu', size[1] // 30)
 clock = pygame.time.Clock()
@@ -79,6 +89,19 @@ while run:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN and timer == -1 and state == 'practice':
                 timer = 1
+            if state == 'practice':
+                if event.key == pygame.K_1:
+                    if 0 <= len(quiz_queue[0][2]):
+                        guess(quiz_queue[0][2][0])
+                if event.key == pygame.K_2:
+                    if 1 <= len(quiz_queue[0][2]):
+                        guess(quiz_queue[0][2][1])
+                if event.key == pygame.K_3:
+                    if 2 <= len(quiz_queue[0][2]):
+                        guess(quiz_queue[0][2][2])
+                if event.key == pygame.K_4:
+                    if 3 <= len(quiz_queue[0][2]):
+                        guess(quiz_queue[0][2][3])
 
     mouse_pos = pygame.mouse.get_pos()
     mouse_press = pygame.mouse.get_pressed(3)
@@ -131,13 +154,7 @@ while run:
                         c = (50, 50, 50)
                         if mouse_click[0]:
                             c = (100, 100, 100)
-
-                            if option == quiz_queue[0][1]:
-                                timer = 10
-                                last_correct = True
-                            else:
-                                timer = -1
-                                last_correct = False
+                            guess(option)
 
                 pygame.draw.rect(screen, c, (0, y, size[0], height))
 
