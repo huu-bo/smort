@@ -1,0 +1,12 @@
+correct:
+    lidwoord checker
+    check spelling mistakes
+
+    comma:
+        check too many or to little spaces
+        check correct amount of items, if too few or too many points
+
+features:
+    quiz editor
+    quiz groups
+    quiz player
