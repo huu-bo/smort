@@ -22,6 +22,25 @@ def practice(f):
     global quiz, quiz_queue, state, timer, shown
     with open('quizzes/' + f, 'r') as file:
         quiz = json.load(file)
+
+    for q in quiz:
+        if len(q) == 2:
+            answers = []
+            correct = random.randint(0, 3)
+            for i in range(4):
+                if i == correct and q[1] not in answers:
+                    answers.append(q[1])
+                else:
+                    good = False
+                    while not good:
+                        p = random.randint(0, len(quiz) - 1)
+                        if quiz[p][0] not in answers:
+                            answers.append(quiz[p][0])
+                            good = True
+            q.append(answers)
+        elif len(q) != 3:
+            print('not enough or too much information', q)
+
     quiz_queue = []
     shown = [False for a in quiz]
 
