@@ -34,8 +34,8 @@ def practice(f):
                     good = False
                     while not good:
                         p = random.randint(0, len(quiz) - 1)
-                        if quiz[p][0] not in answers:
-                            answers.append(quiz[p][0])
+                        if quiz[p][1] not in answers:
+                            answers.append(quiz[p][1])
                             good = True
             q.append(answers)
         elif len(q) != 3:
