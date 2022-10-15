@@ -145,6 +145,8 @@ while run:
                 screen.blit(font.render(option, True, (255, 255, 255)), (0, y))
 
                 y += height + 5
+        elif timer == -1:
+            screen.blit(font.render(quiz_queue[0][1], True, (100, 255, 100)), (100, 200))
 
         if timer > 0:
             timer -= 1
