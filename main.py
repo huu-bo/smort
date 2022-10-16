@@ -10,6 +10,9 @@ pygame.init()
 # you can use 1, 2, 3, 4 buttons in the player
 
 size = (800, 800)
+settings = {
+    'mode': 'type'  # choice, type
+}
 
 state = 'main'  # main, practice, practice_settings, editor
 
@@ -20,6 +23,7 @@ quiz_queue = []
 
 timer = 0
 last_correct = False
+typing = ''
 
 editing = [False, []]
 
@@ -77,13 +81,17 @@ def new_learn():
 
 
 def guess(option):
-    global quiz_queue, timer, last_correct
+    global quiz_queue, timer, last_correct, settings
     if option == quiz_queue[0][1]:
         timer = 10
         last_correct = True
     else:
         timer = -1
         last_correct = False
+
+    if settings['mode'] == 'type' and not last_correct:
+        out = []
+        out += option
 
 
 pre_mouse_press = (False, False, False)
@@ -103,21 +111,30 @@ while run:
             if event.key == pygame.K_RETURN and timer == -1 and state == 'practice':
                 timer = 1
             if state == 'practice':
-                if event.key == pygame.K_1:
-                    if 0 <= len(quiz_queue[0][2]):
-                        guess(quiz_queue[0][2][0])
-                if event.key == pygame.K_2:
-                    if 1 <= len(quiz_queue[0][2]):
-                        guess(quiz_queue[0][2][1])
-                if event.key == pygame.K_3:
-                    if 2 <= len(quiz_queue[0][2]):
-                        guess(quiz_queue[0][2][2])
-                if event.key == pygame.K_4:
-                    if 3 <= len(quiz_queue[0][2]):
-                        guess(quiz_queue[0][2][3])
+                if settings['mode'] == 'choice':
+                    if event.key == pygame.K_1:
+                        if 0 <= len(quiz_queue[0][2]):
+                            guess(quiz_queue[0][2][0])
+                    if event.key == pygame.K_2:
+                        if 1 <= len(quiz_queue[0][2]):
+                            guess(quiz_queue[0][2][1])
+                    if event.key == pygame.K_3:
+                        if 2 <= len(quiz_queue[0][2]):
+                            guess(quiz_queue[0][2][2])
+                    if event.key == pygame.K_4:
+                        if 3 <= len(quiz_queue[0][2]):
+                            guess(quiz_queue[0][2][3])
 
-                if event.key == pygame.K_e:
-                    editor()
+                    if event.key == pygame.K_e:
+                        editor()
+                else:
+                    if event.key == pygame.K_RETURN and timer == 0:
+                        guess(typing)
+                        typing = ''
+                    elif event.key == pygame.K_BACKSPACE:
+                        typing = typing[:-1]
+                    else:
+                        typing += event.unicode
             elif state == 'editor':
                 if event.mod & pygame.KMOD_CTRL:
                     if event.key == pygame.K_e:
@@ -177,24 +194,27 @@ while run:
             print([q[0] for q in quiz_queue])
 
         if timer != -1:
-            y = 300
-            height = size[1] // 20
+            if settings['mode'] == 'choice':
+                y = 300
+                height = size[1] // 20
 
-            for option in quiz_queue[0][2]:
-                c = (0, 0, 0)
-                if timer == 0:
-                    if y <= mouse_pos[1] <= y + height:
-                        c = (50, 50, 50)
-                        if mouse_click[0]:
-                            c = (100, 100, 100)
-                            guess(option)
+                for option in quiz_queue[0][2]:
+                    c = (0, 0, 0)
+                    if timer == 0:
+                        if y <= mouse_pos[1] <= y + height:
+                            c = (50, 50, 50)
+                            if mouse_click[0]:
+                                c = (100, 100, 100)
+                                guess(option)
 
-                pygame.draw.rect(screen, c, (0, y, size[0], height))
+                    pygame.draw.rect(screen, c, (0, y, size[0], height))
 
-                pygame.draw.rect(screen, (255, 255, 255), (0, y, size[0], height), 1)
-                screen.blit(font.render(option, True, (255, 255, 255)), (0, y))
+                    pygame.draw.rect(screen, (255, 255, 255), (0, y, size[0], height), 1)
+                    screen.blit(font.render(option, True, (255, 255, 255)), (0, y))
 
-                y += height + 5
+                    y += height + 5
+            else:
+                screen.blit(font.render(typing, True, (255, 255, 255)), (100, 200))
         elif timer == -1:
             screen.blit(font.render(quiz_queue[0][1], True, (100, 255, 100)), (100, 200))
 
