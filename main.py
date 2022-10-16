@@ -5,6 +5,10 @@ import random
 import os
 pygame.init()
 
+# choose by clicking,
+# e for editor
+# you can use 1, 2, 3, 4 buttons in the player
+
 size = (800, 800)
 
 state = 'main'  # main, practice, practice_settings, editor
@@ -16,6 +20,8 @@ quiz_queue = []
 
 timer = 0
 last_correct = False
+
+editing = [False, []]
 
 
 def practice(f):
@@ -46,6 +52,12 @@ def practice(f):
 
     state = 'practice'
     timer = 0
+
+
+def editor():
+    global state, editing
+    state = 'editor'
+    editing = [False, []]
 
 
 def new_learn():
@@ -79,6 +91,7 @@ font = pygame.font.SysFont('ubuntu', size[1] // 30)
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode(size)
 run = True
+frame = 0
 while run:
     clock.tick(60)
     screen.fill((0, 0, 0))
@@ -102,6 +115,26 @@ while run:
                 if event.key == pygame.K_4:
                     if 3 <= len(quiz_queue[0][2]):
                         guess(quiz_queue[0][2][3])
+
+                if event.key == pygame.K_e:
+                    editor()
+            elif state == 'editor':
+                if event.mod & pygame.KMOD_CTRL:
+                    if event.key == pygame.K_e:
+                        state = 'main'
+                    if event.key == pygame.K_n:
+                        editing = [1, ['', '']]
+                else:
+                    if not editing[1]:
+                        editing[1].append('')
+                        editing[1].append('')
+                    if event.key == pygame.K_RETURN:
+                        if editing[0] < 3:
+                            editing[0] += 1
+                    elif event.key == pygame.K_BACKSPACE:
+                        editing[1][0] = editing[1][0][:-1]
+                    else:
+                        editing[1][editing[0] - 1] += event.unicode
 
     mouse_pos = pygame.mouse.get_pos()
     mouse_press = pygame.mouse.get_pressed(3)
@@ -167,7 +200,17 @@ while run:
 
         if timer > 0:
             timer -= 1
+    elif state == 'editor':
+        if editing[0]:
+            if editing[1]:
+                for i in range(2):
+                    cursor = ''
+                    if editing[0] == i + 1:
+                        if frame // 30 % 2 == 0:
+                            cursor = '_'
+                    screen.blit(font.render(editing[1][i] + cursor, True, (255, 255, 255)), (100, 100 + i * 100))
 
     pygame.display.update()
+    frame += 1
 
 pygame.quit()
