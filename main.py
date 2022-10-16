@@ -127,12 +127,16 @@ while run:
 
                     if event.key == pygame.K_e:
                         editor()
+                    if event.key == pygame.K_m:
+                        settings['mode'] = 'type'
                 else:
                     if event.key == pygame.K_RETURN and timer == 0:
                         guess(typing)
                         typing = ''
                     elif event.key == pygame.K_BACKSPACE:
                         typing = typing[:-1]
+                    elif event.key == pygame.K_m and event.mod & pygame.KMOD_CTRL:
+                        settings['mode'] = 'choice'
                     else:
                         typing += event.unicode
             elif state == 'editor':
@@ -214,7 +218,7 @@ while run:
 
                     y += height + 5
             else:
-                screen.blit(font.render(typing, True, (255, 255, 255)), (100, 200))
+                screen.blit(font.render(typing + '|', True, (255, 255, 255)), (100, 200))
         elif timer == -1:
             screen.blit(font.render(quiz_queue[0][1], True, (100, 255, 100)), (100, 200))
 
