@@ -81,13 +81,25 @@ def new_learn():
 
 
 def guess(option):
-    global quiz_queue, timer, last_correct, settings
+    global quiz_queue, timer, last_correct, settings, quiz
     if option == quiz_queue[0][1]:
         timer = 10
         last_correct = True
     else:
         timer = -1
         last_correct = False
+
+        for q in quiz:
+            if q != quiz_queue[0]:
+                if option == q[1]:
+                    quiz_queue.append(q)
+        good = True
+        for a in option.replace(' ', '').split(','):
+            if a not in quiz_queue[0][1].replace(' ', '').split(','):
+                good = False
+        if good:
+            last_correct = True
+            timer = 10
 
     if settings['mode'] == 'type' and not last_correct:
         out = []
