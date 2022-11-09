@@ -15,7 +15,7 @@ settings = {
 }
 DELAY = 1
 Q_DELAY = [
-    4, 4, 4, 10, 10, 20, 20, 50
+    4, 4, 4, 10, 20, 30, 40, 50
 ]  # the delay of how many questions you need to answer before a question that you answered correct is repeated
 
 state = 'main'  # main, practice, practice_settings, editor
@@ -52,6 +52,8 @@ class QS(enum.IntEnum):
 quiz = []
 shown = []
 quiz_queue = []
+quiz_schedule = []
+correct_streak = {}
 
 timer = 0
 last_correct = False
@@ -125,7 +127,7 @@ def guess(option):
 
         for q in quiz:
             if q != quiz_queue[0]:
-                if option == q[1]:
+                if option in q[1]:
                     quiz_queue.append(q)
         good = True
         for a in option.replace(' ', '').split(','):
@@ -265,16 +267,42 @@ while run:
 
         if timer == 1:
             if len(quiz_queue) > 2 - last_correct:
-                if not last_correct:
-                    quiz_queue.insert(2, quiz_queue[0])
-                quiz_queue.pop(0)
+                pass
             else:
                 new_learn()
-                if not last_correct:
-                    quiz_queue.insert(2, quiz_queue[0])
-                quiz_queue.pop(0)
+
+            if not last_correct:
+                quiz_queue.insert(2, quiz_queue[0])
+
+            found = False
+            for q in quiz_schedule:
+                if quiz_queue[0][0] == q[0]:
+                    found = True
+            if not found:
+                if last_correct:
+                    if quiz_queue[0][0] not in correct_streak:
+                        correct_streak[quiz_queue[0][0]] = 0
+                    else:
+                        correct_streak[quiz_queue[0][0]] += 1
+
+                    quiz_schedule.append([quiz_queue[0][0],
+                                          min(Q_DELAY[correct_streak[quiz_queue[0][0]]], len(Q_DELAY) - 1)])
+                else:
+                    correct_streak[quiz_queue[0][0]] = 0
+
+            i = 0
+            while i < len(quiz_schedule):
+                if quiz_schedule[i][1] < 1:
+                    quiz_queue.append(quiz_queue[0])
+                    quiz_schedule.pop(i)
+                    i -= 1
+                else:
+                    quiz_schedule[i][1] -= 1
+                i += 1
+
+            quiz_queue.pop(0)
             random.shuffle(quiz_queue[0][2])
-            print([q[0] for q in quiz_queue])
+            print([q[0] for q in quiz_queue], quiz_schedule)
 
         if timer != -1:
             if settings['mode'] == 'choice':
