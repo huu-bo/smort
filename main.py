@@ -1,5 +1,5 @@
 import json
-
+import enum
 import pygame
 import random
 import os
@@ -11,12 +11,44 @@ pygame.init()
 
 size = (800, 800)
 settings = {
-    'mode': 'type'  # choice, type
+    'mode': 'choice'  # choice, type
 }
+DELAY = 1
+Q_DELAY = [
+    4, 4, 4, 10, 10, 20, 20, 50
+]  # the delay of how many questions you need to answer before a question that you answered correct is repeated
 
 state = 'main'  # main, practice, practice_settings, editor
 
 filenames = os.listdir('quizzes')
+
+
+def load(directory):
+    if not os.path.isdir(directory):
+        print(directory, 'not a directory')
+        return [['error', 'error', True, [], False]]
+
+    out = []
+    for filename in os.listdir(directory):
+        d = os.path.isdir(directory + '/' + filename)
+        if d:
+            out.append([filename, directory + '/' + filename, True, load(directory + '/' + filename), False])
+        else:
+            out.append((filename, directory + '/' + filename, False))
+    return out
+
+
+qs = load('quizzes')
+
+
+class QS(enum.IntEnum):
+    DRAW_NAME = 0
+    FILE_NAME = 1
+    FOLDER = 2
+    FOLDER_CONTENT = 3
+    FOLDER_SELECTED = 4
+
+
 quiz = []
 shown = []
 quiz_queue = []
@@ -29,10 +61,12 @@ editing = [False, []]
 
 
 def practice(f):
-    global quiz, quiz_queue, state, timer, shown
-    with open('quizzes/' + f, 'r') as file:
+    global quiz, quiz_queue, state, timer, shown, Q_DELAY
+    with open(f, 'r', encoding='UTF-8') as file:
         quiz = json.load(file)
 
+    if len(quiz) > Q_DELAY[-1]:
+        print('quiz too long')
     for q in quiz:
         if len(q) == 2:
             answers = []
@@ -83,7 +117,7 @@ def new_learn():
 def guess(option):
     global quiz_queue, timer, last_correct, settings, quiz
     if option == quiz_queue[0][1]:
-        timer = 10
+        timer = DELAY
         last_correct = True
     else:
         timer = -1
@@ -99,7 +133,7 @@ def guess(option):
                 good = False
         if good:
             last_correct = True
-            timer = 10
+            timer = DELAY
 
     if settings['mode'] == 'type' and not last_correct:
         out = []
@@ -177,19 +211,52 @@ while run:
         y = 0
         height = size[1] // 20
 
-        for filename in filenames:
+        for q in qs:
+            # print(q)
             c = (0, 0, 0)
             if y <= mouse_pos[1] <= y + height:
                 c = (50, 50, 50)
                 if mouse_click[0]:
                     c = (100, 100, 100)
-                    practice(filename)
-            pygame.draw.rect(screen, c, (0, y, size[0], height))
+                    if not q[QS.FOLDER]:
+                        practice(q[QS.FILE_NAME])
+                    else:
+                        q[QS.FOLDER_SELECTED] = not q[QS.FOLDER_SELECTED]
 
-            pygame.draw.rect(screen, (255, 255, 255), (0, y, size[0], height), 1)
-            screen.blit(font.render(filename.split('.')[0], True, (255, 255, 255)), (0, y))
+            if not q[QS.FOLDER]:
+                pygame.draw.rect(screen, c, (0, y, size[0], height))
 
-            y += height
+                pygame.draw.rect(screen, (255, 255, 255), (0, y, size[0], height), 1)
+                screen.blit(font.render(''.join(q[QS.DRAW_NAME].split('.')[0]), True, (255, 255, 255)), (0, y))
+
+                y += height
+            else:
+                pygame.draw.rect(screen, c, (0, y, size[0], height))
+
+                pygame.draw.rect(screen, (255, 255, 255), (0, y, size[0], height), 1)
+                screen.blit(font.render('/' + ''.join(q[QS.DRAW_NAME].split('.')[0]), True, (255, 255, 255)), (0, y))
+
+                y += height
+
+                if q[QS.FOLDER_SELECTED]:
+                    for q1 in q[QS.FOLDER_CONTENT]:
+                        c = (0, 0, 0)
+                        if y <= mouse_pos[1] <= y + height:
+                            c = (50, 50, 50)
+                            if mouse_click[0]:
+                                c = (100, 100, 100)
+                                if not q1[QS.FOLDER]:
+                                    practice(q1[QS.FILE_NAME])
+                                else:
+                                    print('nested folders')
+
+                        pygame.draw.rect(screen, c, (40, y, size[0] - 40, height))
+
+                        pygame.draw.rect(screen, (255, 255, 255), (40, y, size[0] - 40, height), 1)
+                        screen.blit(font.render(''.join(q[0].split('.')[0]), True, (255, 255, 255)), (40, y))
+
+                        y += height
+
     elif state == 'practice':
         if not quiz_queue:
             new_learn()
@@ -247,6 +314,7 @@ while run:
                     screen.blit(font.render(editing[1][i] + cursor, True, (255, 255, 255)), (100, 100 + i * 100))
 
     pygame.display.update()
+    pre_mouse_press = mouse_press
     frame += 1
 
 pygame.quit()
