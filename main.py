@@ -9,6 +9,8 @@ pygame.init()
 # e for editor
 # you can use 1, 2, 3, 4 buttons in the player
 
+# TODO: fullscreen and place text in middle when fullscreen
+
 size = (800, 800)
 settings = {
     'mode': 'choice'  # choice, type
@@ -189,6 +191,9 @@ while run:
                         settings['mode'] = 'choice'
                     else:
                         typing += event.unicode
+
+                if event.key == pygame.K_ESCAPE:
+                    state = 'main'
             elif state == 'editor':
                 if event.mod & pygame.KMOD_CTRL:
                     if event.key == pygame.K_e:
