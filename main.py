@@ -13,7 +13,7 @@ size = (800, 800)
 settings = {
     'mode': 'choice'  # choice, type
 }
-DELAY = 1
+DELAY = 2  # should be more than 1
 Q_DELAY = [
     4, 4, 4, 10, 20, 30, 40, 50
 ]  # the delay of how many questions you need to answer before a question that you answered correct is repeated
@@ -77,8 +77,10 @@ def practice(f):
                 if i == correct and q[1] not in answers:
                     answers.append(q[1])
                 else:
+                    if len(quiz) < 5:  # 5 is just a guess it's probably lower
+                        raise Exception('quiz should have more than 5 questions')
                     good = False
-                    while not good:
+                    while not good:  # terrible code
                         p = random.randint(0, len(quiz) - 1)
                         if quiz[p][1] not in answers:
                             answers.append(quiz[p][1])
@@ -117,7 +119,7 @@ def new_learn():
 
 
 def guess(option):
-    global quiz_queue, timer, last_correct, settings, quiz
+    global quiz_queue, timer, last_correct, settings, quiz, DELAY
     if option == quiz_queue[0][1]:
         timer = DELAY
         last_correct = True
@@ -255,7 +257,7 @@ while run:
                         pygame.draw.rect(screen, c, (40, y, size[0] - 40, height))
 
                         pygame.draw.rect(screen, (255, 255, 255), (40, y, size[0] - 40, height), 1)
-                        screen.blit(font.render(''.join(q[0].split('.')[0]), True, (255, 255, 255)), (40, y))
+                        screen.blit(font.render(q1[QS.DRAW_NAME], True, (255, 255, 255)), (40, y))
 
                         y += height
 
