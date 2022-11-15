@@ -39,7 +39,7 @@ def print_g():
         if type(c) != gu.Letter:
             if c == 'σ':
                 if i < len(typing) - 1:
-                    if typing[i + 1] not in ' \n':
+                    if typing[i + 1] not in ' \n;':
                         print(c, end='')
                     else:
                         print('ς', end='')
@@ -48,7 +48,17 @@ def print_g():
             else:
                 print(c, end='')
         else:
-            print(c.unicode(), end='')
+            u = c.unicode()
+            if u == 'σ' and len(typing) - 1 > i:
+                if type(typing[i + 1]) == gu.Letter:
+                    print(u, end='')
+                    continue
+                if typing[i + 1] not in ' \n;':
+                    print(u, end='')
+                else:
+                    print('ς', end='')
+            else:
+                print(c.unicode(), end='')
         i += 1
 
 
@@ -92,7 +102,7 @@ while True:
         split = [[]]
         i = 0
         for c in typing:
-            if c != ' ':
+            if c != ';':
                 split[-1].append(c)
             else:
                 split.append([])
@@ -105,7 +115,14 @@ while True:
                 out_s = []
                 for c in s:
                     if type(c) == gu.Letter:
-                        out_s.append(c.unicode())
+                        u = c.unicode()
+                        if u == 'σ' and len(typing) + 1 < i:
+                            if typing[i + 1] not in ' \n;':  # does not work with gu.Letter but shouldn't matter
+                                out_s.append(u)
+                            else:
+                                out_s.append('ς')
+                        else:
+                            out_s.append(u)
                     else:
                         out_s.append(c)
                 out_ss.append(''.join(out_s))
@@ -129,6 +146,7 @@ while True:
         typing += ' '
         print_g()
         continue
+
     elif c == 'G':
         lang = 'G'
         continue
@@ -160,6 +178,9 @@ while True:
         typing[-1].mod.iota = True
         print_g()
         continue
+
+    elif c == ';':
+        lang = 'L'
 
     # else:
     #     print(hex(ord(c)))
