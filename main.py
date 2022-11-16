@@ -17,7 +17,7 @@ settings = {
 }
 DELAY = 2  # should be more than 1
 Q_DELAY = [
-    4, 4, 4, 10, 20, 30, 40, 50
+    4, 10, 20, 30, 40, 50, 50, 50
 ]  # the delay of how many questions you need to answer before a question that you answered correct is repeated
 
 state = 'main'  # main, practice, practice_settings, editor
@@ -147,7 +147,8 @@ def guess(option):
 
 
 pre_mouse_press = (False, False, False)
-font = pygame.font.SysFont('ubuntu', size[1] // 30)
+# font = pygame.font.SysFont('ubuntu', size[1] // 30)
+font = pygame.font.Font('font/ubuntu.ttf', size[1] // 30)
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode(size)
 run = True
