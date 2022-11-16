@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import json
 import enum
 import pygame
@@ -9,7 +11,11 @@ pygame.init()
 # e for editor
 # you can use 1, 2, 3, 4 buttons in the player
 
+# big word/words is/are the question(s)
+# number in top right is % correctness
+
 # TODO: fullscreen and place text in middle when fullscreen
+#       saving correct amount
 
 size = (800, 800)
 settings = {
@@ -61,22 +67,25 @@ timer = 0
 last_correct = False
 typing = ''
 
+correct = [0., {}]
+
 editing = [False, []]
 
 
 def practice(f):
-    global quiz, quiz_queue, state, timer, shown, Q_DELAY
+    global quiz, quiz_queue, state, timer, shown, Q_DELAY, correct
     with open(f, 'r', encoding='UTF-8') as file:
         quiz = json.load(file)
 
     if len(quiz) > Q_DELAY[-1]:
         print('quiz too long')
+    correct = [0., {}]
     for q in quiz:
         if len(q) == 2:
             answers = []
-            correct = random.randint(0, 3)
+            c = random.randint(0, 3)
             for i in range(4):
-                if i == correct and q[1] not in answers:
+                if i == c and q[1] not in answers:
                     answers.append(q[1])
                 else:
                     if len(quiz) < 5:  # 5 is just a guess it's probably lower
@@ -121,7 +130,7 @@ def new_learn():
 
 
 def guess(option):
-    global quiz_queue, timer, last_correct, settings, quiz, DELAY
+    global quiz_queue, timer, last_correct, settings, quiz, DELAY, correct
     if option == quiz_queue[0][1]:
         timer = DELAY
         last_correct = True
@@ -132,7 +141,7 @@ def guess(option):
         for q in quiz:
             if q != quiz_queue[0]:
                 if option in q[1]:
-                    quiz_queue.append(q)
+                    quiz_queue.append(q)  # add all questions that have the answer that you gave
         good = True
         for a in option.replace(' ', '').split(','):
             if a not in quiz_queue[0][1].replace(' ', '').split(','):
@@ -140,6 +149,17 @@ def guess(option):
         if good:
             last_correct = True
             timer = DELAY
+
+    if quiz_queue[0][0] not in correct[1]:
+        correct[1][quiz_queue[0][0]] = False
+    if not last_correct:
+        if correct[1][quiz_queue[0][0]]:
+            correct[1][quiz_queue[0][0]] = False
+            correct[0] -= 1 / len(quiz)
+    else:
+        if not correct[1][quiz_queue[0][0]]:
+            correct[1][quiz_queue[0][0]] = True
+            correct[0] += 1 / len(quiz)
 
     if settings['mode'] == 'type' and not last_correct:
         out = []
@@ -149,6 +169,7 @@ def guess(option):
 pre_mouse_press = (False, False, False)
 # font = pygame.font.SysFont('ubuntu', size[1] // 30)
 font = pygame.font.Font('font/ubuntu.ttf', size[1] // 30)
+big_font = pygame.font.Font('font/ubuntu.ttf', size[1] // 20)
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode(size)
 run = True
@@ -271,7 +292,8 @@ while run:
         if not quiz_queue:
             new_learn()
 
-        screen.blit(font.render(quiz_queue[0][0], True, (255, 255, 255)), (100, 100))
+        screen.blit(big_font.render(quiz_queue[0][0], True, (255, 255, 255)), (100, 100))
+        screen.blit(font.render(str(round(correct[0] * 100)), True, (255, 255, 255)), (size[0] - 50, 50))
 
         if timer == 1:
             if len(quiz_queue) > 2 - last_correct:
