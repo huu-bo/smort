@@ -171,7 +171,7 @@ pre_mouse_press = (False, False, False)
 font = pygame.font.Font('font/ubuntu.ttf', size[1] // 30)
 big_font = pygame.font.Font('font/ubuntu.ttf', size[1] // 20)
 clock = pygame.time.Clock()
-screen = pygame.display.set_mode(size)
+screen = pygame.display.set_mode(size, pygame.RESIZABLE)
 run = True
 frame = 0
 while run:
@@ -180,6 +180,8 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
+        elif event.type == pygame.VIDEORESIZE:
+            size = (event.w, event.h)
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN and timer == -1 and state == 'practice':
