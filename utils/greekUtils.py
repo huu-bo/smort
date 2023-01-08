@@ -1,4 +1,5 @@
 import typing
+import string
 
 # α ἀ ἁ ὰ ά ᾶ ἂ  ἃ  ἄ  ἅ  ἆ  ἇ
 #   ) ( \ / = )\ (\ )/ (/ )= (=
@@ -61,7 +62,11 @@ greek = {
 
 class Letter:
     def __init__(self, char, mod=None, filename='G_LUT.txt'):
-        self.char = greek[char][0]
+        if char in string.ascii_lowercase:
+            self.char = greek[char][0]
+        else:
+            self.char = greek[char.lower()][1]
+
         if mod is not None:
             self.mod = mod
         else:

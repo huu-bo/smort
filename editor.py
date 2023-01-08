@@ -1,5 +1,5 @@
 import string
-import greekUtils as gu
+from utils import greekUtils as gu
 
 
 # https://stackoverflow.com/a/21659588
