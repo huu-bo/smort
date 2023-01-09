@@ -240,7 +240,7 @@ while run:
                 elif event.key == pygame.K_BACKSPACE:
                     typing.typing = typing.typing[:-1]
 
-    screen.blit(font.render(typing.unicode(), True, (255, 255, 255)), (0, 0))
+    screen.blit(font.render(typing.unicode() + '|', True, (255, 255, 255)), (0, 0))
 
     screen.blit(font.render(typing.lang, True, (255, 255, 255)), (size[0] - SPACING, size[1] - SPACING))
 

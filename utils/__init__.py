@@ -66,7 +66,7 @@ class String:
                     if i == len(self.typing) - 1:
                         out += 'ς'
                     elif type(self.typing[i + 1]) == str:
-                        if self.typing[i + 1] in ' ;\n':
+                        if self.typing[i + 1] in ' ;/,\n':
                             out += 'ς'
                         else:
                             out += 'σ'

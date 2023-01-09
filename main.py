@@ -17,6 +17,8 @@ pygame.init()
 # TODO: fullscreen and place text in middle when fullscreen
 #       saving correct amount
 
+# TODO: different font (circumflex broken)
+
 size = (800, 800)
 settings = {
     'mode': 'choice'  # choice, type
