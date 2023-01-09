@@ -4,21 +4,17 @@ made using/for python 3.7
 
 # quizzes
 example quiz:
-```
-{
+```json
+[
     ["question", "correct answer"],
-    ["question2", "correct answer2", ["option1", "option2", "option3", option4"]
-}
+    ["question2", "correct answer2", ["option1", "option2", "option3", "option4"]
+]
 ```
 
 # editor
-<code>editor.py</code>
+<code>editor2.py</code>
 
-only works in windows CMD and POSIX compatible terminal emulators
+two alphabets, ancient greek and latin
 
-capital G for typing greek characters\
-capital L for typing latin characters
-
-control + C to save and exit, the program will ask for a filename
-
-no arrow support (**don't use arrows**)
+ctrl+g changes to greek\
+ctrl+l changes to latin (default)
