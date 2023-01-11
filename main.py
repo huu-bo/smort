@@ -188,7 +188,7 @@ while run:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN and timer == -1 and state == 'practice':
                 timer = 1
-            if state == 'practice':
+            elif state == 'practice':
                 if settings['mode'] == 'choice':
                     if event.key == pygame.K_1:
                         if 0 <= len(quiz_queue[0][2]):

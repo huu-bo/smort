@@ -197,6 +197,8 @@ out = []
 typing = utils.String()
 lang = 'L'
 
+pre = utils.String()
+
 run = True
 clock = pygame.time.Clock()
 while run:
@@ -236,11 +238,13 @@ while run:
                             split[i] = ''.join(split[i])
                         print(split)
                         out.append(split)
+                        pre = typing
                         typing = utils.String()
                 elif event.key == pygame.K_BACKSPACE:
                     typing.typing = typing.typing[:-1]
 
     screen.blit(font.render(typing.unicode() + '|', True, (255, 255, 255)), (0, 0))
+    screen.blit(font.render(pre.unicode(), True, (255, 255, 255)), (0, SPACING))
 
     screen.blit(font.render(typing.lang, True, (255, 255, 255)), (size[0] - SPACING, size[1] - SPACING))
 
