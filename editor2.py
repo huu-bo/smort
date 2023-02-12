@@ -211,37 +211,36 @@ while run:
             size = screen.get_size()
 
         if event.type == pygame.KEYDOWN:
-            if event.unicode:
-                typing.type(event.unicode)
+            if event.key == pygame.K_RETURN:  # TODO: make this a function
+                split = [[]]
+                i = 0
+                for c in typing.typing:
+                    if c != ';':
+                        split[-1].append(c)
+                    else:
+                        split.append([])
+                        split[-1] += typing.typing[i + 1:]
+                        break
+                    i += 1
+                if len(split) == 2:
+                    for i in range(len(split)):
+                        for j in range(len(split[i])):
+                            if type(split[i][j]) == utils.greekUtils.Letter:
+                                split[i][j] = split[i][j].unicode()
+                        split[i] = ''.join(split[i])
+                    print(split)
+                    out.append(split)
+                    pre = typing
+                    typing = utils.String()
+            elif event.key == pygame.K_BACKSPACE:
+                typing.typing = typing.typing[:-1]
             elif event.mod & pygame.KMOD_CTRL:
                 if event.key == pygame.K_l:
                     typing.change_lang('L')
                 elif event.key == pygame.K_g:
                     typing.change_lang('G')
-            else:  # things like newline and backspace
-                if event.key == pygame.K_RETURN:
-                    split = [[]]
-                    i = 0
-                    for c in typing.typing:
-                        if c != ';':
-                            split[-1].append(c)
-                        else:
-                            split.append([])
-                            split[-1] += typing.typing[i + 1:]
-                            break
-                        i += 1
-                    if len(split) == 2:
-                        for i in range(len(split)):
-                            for j in range(len(split[i])):
-                                if type(split[i][j]) == utils.greekUtils.Letter:
-                                    split[i][j] = split[i][j].unicode()
-                            split[i] = ''.join(split[i])
-                        print(split)
-                        out.append(split)
-                        pre = typing
-                        typing = utils.String()
-                elif event.key == pygame.K_BACKSPACE:
-                    typing.typing = typing.typing[:-1]
+            else:
+                typing.type(event.unicode)
 
     screen.blit(font.render(typing.unicode() + '|', True, (255, 255, 255)), (0, 0))
     screen.blit(font.render(pre.unicode(), True, (255, 255, 255)), (0, SPACING))
