@@ -12,7 +12,7 @@ example quiz:
 ```
 
 # editor
-<code>editor2.py</code>
+`editor.py`
 
 two alphabets, ancient greek and latin
 
