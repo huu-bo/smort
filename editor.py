@@ -106,4 +106,8 @@ pygame.quit()
 
 filename = 'quizzes/ARGO grieks/' + input('filename quizzes/ARGO grieks/')
 with open(filename, 'w') as file:
-    file.write(str(out).replace("'", '"'))
+    out_string = '[\n\t'
+    for q in out:
+        out_string += '["' + q[0] + '", "' + q[1] + '"],\n\t'
+    # file.write(str(out).replace("'", '"'))
+    file.write(out_string[:-3] + '\n]')
