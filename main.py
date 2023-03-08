@@ -14,9 +14,6 @@ pygame.init()
 # big word/words is/are the question(s)
 # number in top right is % correctness
 
-# TODO: fullscreen and place text in middle when fullscreen
-#       saving correct amount
-
 # TODO: different font (circumflex broken)
 
 size = (800, 800)
@@ -103,7 +100,7 @@ def practice(f):
             print('not enough or too much information', q)
 
     quiz_queue = []
-    shown = [False for a in quiz]
+    shown = [False for _ in quiz]
 
     state = 'practice'
     timer = 0
