@@ -66,6 +66,9 @@ timer = 0
 last_correct = False
 typing = ''
 
+q_selection = 0
+q_ret = False
+
 correct = [0., {}]
 
 editing = [False, []]
@@ -165,6 +168,41 @@ def guess(option):
         out += option
 
 
+def draw_files(qs, y: int, level: int, selected: int, ret: bool):
+    height = size[1] // 20
+
+    for q in qs:
+        # print(q)
+        c = (0, 0, 0)
+        if y <= mouse_pos[1] <= y + height or selected == y // height:
+            c = (50, 50, 50)
+            if mouse_click[0] or ret:
+                c = (100, 100, 100)
+                if not q[QS.FOLDER]:
+                    practice(q[QS.FILE_NAME])
+                else:
+                    q[QS.FOLDER_SELECTED] = not q[QS.FOLDER_SELECTED]
+
+        if not q[QS.FOLDER]:
+            pygame.draw.rect(screen, c, (0, y, size[0], height))
+
+            pygame.draw.rect(screen, (255, 255, 255), (level * height, y, size[0] - level * height, height), 1)
+            screen.blit(font.render(''.join(q[QS.DRAW_NAME].split('.')[0]), True, (255, 255, 255)), (level * height, y))
+
+            y += height
+        else:
+            pygame.draw.rect(screen, c, (0, y, size[0], height))
+
+            pygame.draw.rect(screen, (255, 255, 255), (level * height, y, size[0] - level * height, height), 1)
+            screen.blit(font.render('/ ' + ''.join(q[QS.DRAW_NAME].split('.')[0]), True, (255, 255, 255)), (level * height, y))
+
+            y += height
+
+            if q[QS.FOLDER_SELECTED]:
+                y += draw_files(q[QS.FOLDER_CONTENT], y, level + 1, selected, ret) - y
+    return y
+
+
 pre_mouse_press = (False, False, False)
 # font = pygame.font.SysFont('ubuntu', size[1] // 30)
 font = pygame.font.Font('font/ubuntu.ttf', size[1] // 30)
@@ -176,6 +214,7 @@ frame = 0
 while run:
     clock.tick(60)
     screen.fill((0, 0, 0))
+    q_ret = False
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
@@ -234,60 +273,21 @@ while run:
                         editing[1][0] = editing[1][0][:-1]
                     else:
                         editing[1][editing[0] - 1] += event.unicode
+            elif state == 'main':
+                if event.key == pygame.K_DOWN:
+                    q_selection += 1
+                elif event.key == pygame.K_UP:
+                    if q_selection > 0:
+                        q_selection -= 1
+                if event.key == pygame.K_RETURN:
+                    q_ret = True
 
     mouse_pos = pygame.mouse.get_pos()
     mouse_press = pygame.mouse.get_pressed(3)
     mouse_click = [mouse_press[i] and not pre_mouse_press[i] for i in range(3)]
 
     if state == 'main':
-        y = 0
-        height = size[1] // 20
-
-        for q in qs:
-            # print(q)
-            c = (0, 0, 0)
-            if y <= mouse_pos[1] <= y + height:
-                c = (50, 50, 50)
-                if mouse_click[0]:
-                    c = (100, 100, 100)
-                    if not q[QS.FOLDER]:
-                        practice(q[QS.FILE_NAME])
-                    else:
-                        q[QS.FOLDER_SELECTED] = not q[QS.FOLDER_SELECTED]
-
-            if not q[QS.FOLDER]:
-                pygame.draw.rect(screen, c, (0, y, size[0], height))
-
-                pygame.draw.rect(screen, (255, 255, 255), (0, y, size[0], height), 1)
-                screen.blit(font.render(''.join(q[QS.DRAW_NAME].split('.')[0]), True, (255, 255, 255)), (0, y))
-
-                y += height
-            else:
-                pygame.draw.rect(screen, c, (0, y, size[0], height))
-
-                pygame.draw.rect(screen, (255, 255, 255), (0, y, size[0], height), 1)
-                screen.blit(font.render('/' + ''.join(q[QS.DRAW_NAME].split('.')[0]), True, (255, 255, 255)), (0, y))
-
-                y += height
-
-                if q[QS.FOLDER_SELECTED]:
-                    for q1 in q[QS.FOLDER_CONTENT]:
-                        c = (0, 0, 0)
-                        if y <= mouse_pos[1] <= y + height:
-                            c = (50, 50, 50)
-                            if mouse_click[0]:
-                                c = (100, 100, 100)
-                                if not q1[QS.FOLDER]:
-                                    practice(q1[QS.FILE_NAME])
-                                else:
-                                    print('nested folders')
-
-                        pygame.draw.rect(screen, c, (40, y, size[0] - 40, height))
-
-                        pygame.draw.rect(screen, (255, 255, 255), (40, y, size[0] - 40, height), 1)
-                        screen.blit(font.render(q1[QS.DRAW_NAME], True, (255, 255, 255)), (40, y))
-
-                        y += height
+        draw_files(qs, 0, 0, q_selection, q_ret)
 
     elif state == 'practice':
         if not quiz_queue:
