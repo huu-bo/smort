@@ -104,7 +104,7 @@ while run:
 
 pygame.quit()
 
-filename = 'quizzes/ARGO grieks/' + input('filename quizzes/ARGO grieks/')
+filename = 'quizzes/' + input('filename quizzes/')
 with open(filename, 'w') as file:
     out_string = '[\n\t'
     for q in out:
