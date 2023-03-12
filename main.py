@@ -282,6 +282,14 @@ while run:
                 if event.key == pygame.K_RETURN:
                     q_ret = True
 
+                kmod = pygame.key.get_mods()
+                if event.key == pygame.K_SPACE and kmod & pygame.KMOD_CTRL and kmod & pygame.KMOD_SHIFT:
+                    font = pygame.font.Font('font/ubuntu.ttf', size[1] // 30)
+                    big_font = pygame.font.Font('font/ubuntu.ttf', size[1] // 20)
+                elif event.key == pygame.K_SPACE and kmod & pygame.KMOD_CTRL:
+                    font = pygame.font.Font('font/NotoSansJP-Regular.otf', size[1] // 30)
+                    big_font = pygame.font.Font('font/NotoSansJP-Regular.otf', size[1] // 20)
+
     mouse_pos = pygame.mouse.get_pos()
     mouse_press = pygame.mouse.get_pressed(3)
     mouse_click = [mouse_press[i] and not pre_mouse_press[i] for i in range(3)]
