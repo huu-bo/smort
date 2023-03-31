@@ -302,7 +302,7 @@ while run:
             new_learn()
 
         screen.blit(big_font.render(quiz_queue[0][0], True, (255, 255, 255)), (100, 100))
-        screen.blit(font.render(str(round(correct[0] * 100)), True, (255, 255, 255)), (size[0] - 50, 50))
+        screen.blit(font.render(str(round(correct[0] * 100)), True, (255, 255, 255)), (size[0] - 70, 50))
 
         if timer == 1:
             if len(quiz_queue) > 2 - last_correct:

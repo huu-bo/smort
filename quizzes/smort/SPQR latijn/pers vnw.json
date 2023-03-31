@@ -1,0 +1,20 @@
+[
+  ["ego", "nom ik"],
+  ["mei", "gen van mij"],
+  ["mihi", "dat aan/voor mij"],
+  ["me", "acc/abl mij"],
+
+  ["tu", "nom jij, u"],
+  ["tui", "gen van jou, van u"],
+  ["tibi", "dat aan/voor jou, aan/voor u"],
+  ["te", "acc/abl jou, u"],
+
+  ["is", "nom hij"],
+  ["eius", "gen van hem, van haar"],
+  ["ei", "dat aan/voor hem, aan/voor haar"],
+  ["eum", "acc hem"],
+  ["eo", "abl hem"],
+
+  ["ea", "nom/abl zij"],
+  ["eam", "acc haar"]
+]
