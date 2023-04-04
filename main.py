@@ -174,9 +174,17 @@ def draw_files(qs, y: int, level: int, selected: int, ret: bool):
     for q in qs:
         # print(q)
         c = (0, 0, 0)
-        if y <= mouse_pos[1] <= y + height or selected == y // height:
+        if y <= mouse_pos[1] <= y + height:
             c = (50, 50, 50)
-            if mouse_click[0] or ret:
+            if mouse_click[0]:
+                c = (100, 100, 100)
+                if not q[QS.FOLDER]:
+                    practice(q[QS.FILE_NAME])
+                else:
+                    q[QS.FOLDER_SELECTED] = not q[QS.FOLDER_SELECTED]
+        if selected == y // height:
+            c = (50, 50, 50)
+            if ret:
                 c = (100, 100, 100)
                 if not q[QS.FOLDER]:
                     practice(q[QS.FILE_NAME])
