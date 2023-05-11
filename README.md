@@ -16,7 +16,7 @@ example quiz:
 
 key 1, 2, 3, 4 can be used for shortcut for clicking the correct answer
 
-press ctrl + space for font that Japanese is supported, ctrl + space + shift for default font
+press `ctrl`+`space` for a font that supports japanese, `ctrl`+`shift`+`space` for default font
 
 # editor
 `editor.py`
