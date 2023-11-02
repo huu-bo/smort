@@ -105,7 +105,7 @@ while run:
 pygame.quit()
 
 filename = 'quizzes/' + input('filename quizzes/')
-with open(filename, 'w') as file:
+with open(filename, 'w', encoding='utf-8') as file:
     out_string = '[\n\t'
     for q in out:
         out_string += '["' + q[0] + '", "' + q[1] + '"],\n\t'

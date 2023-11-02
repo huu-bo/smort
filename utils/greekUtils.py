@@ -8,7 +8,7 @@ import string
 
 class Lut:
     def __init__(self, filename):
-        with open(filename, 'r') as file:
+        with open(filename, 'r', encoding='utf-8') as file:
             raw = file.read()
         self.data = raw.split('\n')
 
