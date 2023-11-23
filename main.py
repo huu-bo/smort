@@ -332,6 +332,7 @@ while run:
                     else:
                         correct_streak[quiz_queue[0][0]] += 1
 
+                    # TODO: crashes?????
                     quiz_schedule.append([quiz_queue[0][0],
                                           min(Q_DELAY[correct_streak[quiz_queue[0][0]]], len(Q_DELAY) - 1)])
                 else:
