@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>#t#</title>
+    #h#
+    <script>
+        ping = setInterval(() => {
+            const request = new Request("/ping");
+            fetch(request).catch((e) => {
+                clearInterval(ping);
+                document.getElementById('error').innerText += 'Server closed prematurely\n'
+            });
+        }, 1000);
+    </script>
+</head>
+<body>
+<h1 id="error" style="color: red"></h1>
+#c#
+</body>
+</html>
