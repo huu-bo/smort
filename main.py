@@ -5,6 +5,8 @@ import enum
 import pygame
 import random
 import os
+
+from host import host
 pygame.init()
 
 # choose by clicking,
@@ -169,6 +171,7 @@ def guess(option):
 
 
 def draw_files(qs, y: int, level: int, selected: int, ret: bool):
+    mod = pygame.key.get_mods()
     height = size[1] // 20
 
     for q in qs:
@@ -187,7 +190,10 @@ def draw_files(qs, y: int, level: int, selected: int, ret: bool):
             if ret:
                 c = (100, 100, 100)
                 if not q[QS.FOLDER]:
-                    practice(q[QS.FILE_NAME])
+                    if mod & pygame.KMOD_SHIFT:
+                        host_(q)
+                    else:
+                        practice(q[QS.FILE_NAME])
                 else:
                     q[QS.FOLDER_SELECTED] = not q[QS.FOLDER_SELECTED]
 
@@ -209,6 +215,22 @@ def draw_files(qs, y: int, level: int, selected: int, ret: bool):
             if q[QS.FOLDER_SELECTED]:
                 y += draw_files(q[QS.FOLDER_CONTENT], y, level + 1, selected, ret) - y
     return y
+
+
+def host_(q):
+    body = ''
+    body += '<table>'
+    with open(q[QS.FILE_NAME], 'r', encoding='utf-8') as file:
+        raw = json.load(file)
+        for row in raw:
+            body += '<tr>'
+            for i in range(2):
+                body += f'<td>{row[i]}</td>'
+            body += '</tr>'
+    body += '</table>'
+    head = '<style>tr:nth-child(even) {background-color: #f2f2f2} td {padding: 8px}</style>'
+    host.host('localhost', 8080,
+              host.get_html(q[QS.DRAW_NAME], body, head=head))
 
 
 pre_mouse_press = (False, False, False)
