@@ -58,6 +58,10 @@ greek = {
     'l': 'λΛ', 'm': 'μΜ', 'n': 'νΝ', 'c': 'ξΖ', 'o': 'οΟ', 'p': 'πΠ', 'r': 'ρΡ', 's': 'σΣ', 't': 'τΤ', 'u': 'υΥ',
     'f': 'φΠ', 'x': 'χΧ', 'y': 'ψΨ', 'w': 'ωΩ', 'v': 'νΝ'
 }
+latin = {}
+for c in greek:
+    latin[greek[c][0]] = c
+    latin[greek[c][1]] = c.upper()
 
 
 class Letter:
@@ -134,9 +138,30 @@ class GreekStr:
         else:
             raise TypeError('GreekStr')
 
+    def translit(self):
+        with open('GL_LUT.txt', 'r', encoding='utf-8') as file:
+            _LATIN = dict([line.split(' ', 1) for line in file.read().split('\n')])
+
+        out = ''
+        for c in self.data:
+            c: str = c.unicode()
+            if c in _LATIN:
+                out += _LATIN[c]
+            elif c.lower() in _LATIN:
+                out += _LATIN[c.lower()].upper()
+            elif c in latin:
+                out += latin[c]
+            else:
+                out += latin[c.lower()].upper()
+        return out
+
 
 if __name__ == '__main__':
-    s = GreekStr('test')
+    s = GreekStr('testOWO')
     print(s)
 
+    print(latin)
+
     # TODO: add tests
+
+    print(s.translit())
