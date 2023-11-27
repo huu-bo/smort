@@ -66,10 +66,13 @@ for c in greek:
 
 class Letter:
     def __init__(self, char, mod=None, filename='G_LUT.txt'):
-        if char in string.ascii_lowercase:
-            self.char = greek[char][0]
+        if char.lower() not in latin:
+            if char in string.ascii_lowercase:
+                self.char = greek[char][0]
+            else:
+                self.char = greek[char.lower()][1]
         else:
-            self.char = greek[char.lower()][1]
+            self.char = char  # TODO: mods will not sync
 
         if mod is not None:
             self.mod = mod
@@ -138,22 +141,25 @@ class GreekStr:
         else:
             raise TypeError('GreekStr')
 
-    def translit(self):
-        with open('GL_LUT.txt', 'r', encoding='utf-8') as file:
-            _LATIN = dict([line.split(' ', 1) for line in file.read().split('\n')])
 
-        out = ''
-        for c in self.data:
-            c: str = c.unicode()
-            if c in _LATIN:
-                out += _LATIN[c]
-            elif c.lower() in _LATIN:
-                out += _LATIN[c.lower()].upper()
-            elif c in latin:
-                out += latin[c]
-            else:
-                out += latin[c.lower()].upper()
-        return out
+def translit(data: str):
+    with open('GL_LUT.txt', 'r', encoding='utf-8') as file:
+        _LATIN = dict([line.split(' ', 1) for line in file.read().split('\n')])
+
+    out = ''
+    for c in data:
+        c: str
+        if c in _LATIN:
+            out += _LATIN[c]
+        elif c.lower() in _LATIN:
+            out += _LATIN[c.lower()].upper()
+        elif c in latin:
+            out += latin[c]
+        elif c in string.ascii_letters + string.punctuation + ' ':
+            out += c
+        else:
+            out += latin[c.lower()].upper()
+    return out
 
 
 if __name__ == '__main__':
@@ -165,3 +171,4 @@ if __name__ == '__main__':
     # TODO: add tests
 
     print(s.translit())
+    print(GreekStr('τεστΟΩΟ'))

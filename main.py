@@ -7,6 +7,7 @@ import random
 import os
 
 from host import host
+from utils.greekUtils import translit
 pygame.init()
 
 # choose by clicking,
@@ -191,7 +192,7 @@ def draw_files(qs, y: int, level: int, selected: int, ret: bool):
                 c = (100, 100, 100)
                 if not q[QS.FOLDER]:
                     if mod & pygame.KMOD_SHIFT:
-                        host_(q)
+                        host_(q, True)
                     else:
                         practice(q[QS.FILE_NAME])
                 else:
@@ -217,7 +218,7 @@ def draw_files(qs, y: int, level: int, selected: int, ret: bool):
     return y
 
 
-def host_(q):
+def host_(q, t: bool):
     body = ''
     body += '<table>'
     with open(q[QS.FILE_NAME], 'r', encoding='utf-8') as file:
@@ -226,6 +227,8 @@ def host_(q):
             body += '<tr>'
             for i in range(2):
                 body += f'<td>{row[i]}</td>'
+                if i == 0 and t:
+                    body += f'<td>{translit(row[i])}</td>'
             body += '</tr>'
     body += '</table>'
     head = '<style>tr:nth-child(even) {background-color: #f2f2f2} td {padding: 8px}</style>'
