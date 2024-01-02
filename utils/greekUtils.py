@@ -62,6 +62,7 @@ latin = {}
 for c in greek:
     latin[greek[c][0]] = c
     latin[greek[c][1]] = c.upper()
+latin['ς'] = 's'
 
 
 class Letter:
