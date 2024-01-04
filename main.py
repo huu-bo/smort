@@ -11,7 +11,6 @@ from utils.greekUtils import translit
 pygame.init()
 
 # choose by clicking,
-# e for editor
 # you can use 1, 2, 3, 4 buttons in the player
 
 # big word/words is/are the question(s)
@@ -28,7 +27,7 @@ Q_DELAY = [
     4, 10, 20, 30, 40, 50, 50, 50
 ]  # the delay of how many questions you need to answer before a question that you answered correct is repeated
 
-state = 'main'  # main, practice, practice_settings, editor
+state = 'main'  # main, practice, practice_settings
 
 filenames = os.listdir('quizzes')
 
@@ -74,8 +73,6 @@ q_ret = False
 
 correct = [0., {}]
 
-editing = [False, []]
-
 
 def practice(f):
     global quiz, quiz_queue, state, timer, shown, Q_DELAY, correct
@@ -110,12 +107,6 @@ def practice(f):
 
     state = 'practice'
     timer = 0
-
-
-def editor():
-    global state, editing
-    state = 'editor'
-    editing = [False, []]
 
 
 def new_learn():
@@ -192,7 +183,7 @@ def draw_files(qs, y: int, level: int, selected: int, ret: bool):
                 c = (100, 100, 100)
                 if not q[QS.FOLDER]:
                     if mod & pygame.KMOD_SHIFT:
-                        host_(q, True)
+                        host_(q, False)
                     else:
                         practice(q[QS.FILE_NAME])
                 else:
@@ -272,8 +263,6 @@ while run:
                         if 3 <= len(quiz_queue[0][2]):
                             guess(quiz_queue[0][2][3])
 
-                    if event.key == pygame.K_e:
-                        editor()
                     if event.key == pygame.K_m:
                         settings['mode'] = 'type'
                 else:
@@ -289,23 +278,6 @@ while run:
 
                 if event.key == pygame.K_ESCAPE:
                     state = 'main'
-            elif state == 'editor':
-                if event.mod & pygame.KMOD_CTRL:
-                    if event.key == pygame.K_e:
-                        state = 'main'
-                    if event.key == pygame.K_n:
-                        editing = [1, ['', '']]
-                else:
-                    if not editing[1]:
-                        editing[1].append('')
-                        editing[1].append('')
-                    if event.key == pygame.K_RETURN:
-                        if editing[0] < 3:
-                            editing[0] += 1
-                    elif event.key == pygame.K_BACKSPACE:
-                        editing[1][0] = editing[1][0][:-1]
-                    else:
-                        editing[1][editing[0] - 1] += event.unicode
             elif state == 'main':
                 if event.key == pygame.K_DOWN:
                     q_selection += 1
@@ -322,6 +294,9 @@ while run:
                 elif event.key == pygame.K_SPACE and kmod & pygame.KMOD_CTRL:
                     font = pygame.font.Font('font/NotoSansJP-Regular.otf', size[1] // 30)
                     big_font = pygame.font.Font('font/NotoSansJP-Regular.otf', size[1] // 20)
+
+            else:
+                raise AssertionError(f"unknown state '{state}'")
 
     mouse_pos = pygame.mouse.get_pos()
     mouse_press = pygame.mouse.get_pressed(3)
@@ -404,15 +379,9 @@ while run:
 
         if timer > 0:
             timer -= 1
-    elif state == 'editor':
-        if editing[0]:
-            if editing[1]:
-                for i in range(2):
-                    cursor = ''
-                    if editing[0] == i + 1:
-                        if frame // 30 % 2 == 0:
-                            cursor = '_'
-                    screen.blit(font.render(editing[1][i] + cursor, True, (255, 255, 255)), (100, 100 + i * 100))
+
+    else:
+        raise AssertionError(f"unknown state '{state}'")
 
     pygame.display.update()
     pre_mouse_press = mouse_press
