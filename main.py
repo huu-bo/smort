@@ -5,6 +5,7 @@ import enum
 import pygame
 import random
 import os
+from difflib import SequenceMatcher
 
 from host import host
 from utils.greekUtils import translit
@@ -26,6 +27,7 @@ DELAY = 2  # should be more than 1
 Q_DELAY = [
     4, 10, 20, 30, 40, 50, 50, 50
 ]  # the delay of how many questions you need to answer before a question that you answered correct is repeated
+RATIO_CORRECT = .7
 
 state = 'main'  # main, practice, practice_settings
 
@@ -130,21 +132,18 @@ def guess(option):
     if option == quiz_queue[0][1]:
         timer = DELAY
         last_correct = True
+    elif settings['mode'] == 'type' and SequenceMatcher(None, option, quiz_queue[0][1]).ratio() > RATIO_CORRECT:
+        timer = DELAY
+        last_correct = True
     else:
         timer = -1
         last_correct = False
 
-        for q in quiz:
-            if q != quiz_queue[0]:
-                if option in q[1]:
-                    quiz_queue.append(q)  # add all questions that have the answer that you gave
-        good = True
-        for a in option.replace(' ', '').split(','):
-            if a not in quiz_queue[0][1].replace(' ', '').split(','):
-                good = False
-        if good:
-            last_correct = True
-            timer = DELAY
+        if option:
+            for q in quiz:
+                if q != quiz_queue[0]:
+                    if option in q[1]:
+                        quiz_queue.append(q)  # add all questions that also have the answer that you gave
 
     if quiz_queue[0][0] not in correct[1]:
         correct[1][quiz_queue[0][0]] = False
@@ -156,10 +155,6 @@ def guess(option):
         if not correct[1][quiz_queue[0][0]]:
             correct[1][quiz_queue[0][0]] = True
             correct[0] += 1 / len(quiz)
-
-    if settings['mode'] == 'type' and not last_correct:
-        out = []
-        out += option
 
 
 def draw_files(qs, y: int, level: int, selected: int, ret: bool):
