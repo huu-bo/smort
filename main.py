@@ -113,18 +113,13 @@ def practice(f):
 
 def new_learn():
     global quiz, quiz_queue, shown
-    learned = True
-    times = 0
-    while learned and times < 100:
-        i = random.randint(0, len(quiz) - 1)
-        if not shown[i]:
-            quiz_queue.append(quiz[i])
-            shown[i] = True
-            learned = False
-        times += 1
-    if learned:
-        i = random.randint(0, len(quiz) - 1)
-        quiz_queue.append(quiz[i])
+
+    not_shown = [i for i, s in enumerate(shown) if not s]
+    if not not_shown:
+        print('user has been shown all')
+        quiz_queue.append(random.choice(quiz))
+    else:
+        quiz_queue.append(quiz[random.choice(not_shown)])
 
 
 def guess(option):
