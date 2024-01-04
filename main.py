@@ -21,12 +21,9 @@ pygame.init()
 
 size = (800, 800)
 settings = {
-    'mode': 'choice'  # choice, type
+    'mode': 'choice'  # choice, type, game
 }
 DELAY = 2  # should be more than 1
-Q_DELAY = [
-    4, 10, 20, 30, 40, 50, 50, 50
-]  # the delay of how many questions you need to answer before a question that you answered correct is repeated
 RATIO_CORRECT = .7
 
 state = 'main'  # main, practice, practice_settings
@@ -74,12 +71,10 @@ correct = [0., {}]
 
 
 def practice(f):
-    global quiz, quiz_queue, state, timer, Q_DELAY, correct
+    global quiz, quiz_queue, state, timer, correct
     with open(f, 'r', encoding='UTF-8') as file:
         quiz = json.load(file)
 
-    if len(quiz) > Q_DELAY[-1]:
-        print('quiz too long')
     correct = [0., {}]
     for q in quiz:
         if len(q) == 2:
