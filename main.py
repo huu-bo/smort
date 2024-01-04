@@ -61,10 +61,7 @@ class QS(enum.IntEnum):
 
 
 quiz = []
-shown = []
 quiz_queue = []
-quiz_schedule = []
-correct_streak = {}
 
 timer = 0
 last_correct = False
@@ -77,7 +74,7 @@ correct = [0., {}]
 
 
 def practice(f):
-    global quiz, quiz_queue, state, timer, shown, Q_DELAY, correct
+    global quiz, quiz_queue, state, timer, Q_DELAY, correct
     with open(f, 'r', encoding='UTF-8') as file:
         quiz = json.load(file)
 
@@ -105,21 +102,26 @@ def practice(f):
             print('not enough or too much information', q)
 
     quiz_queue = []
-    shown = [False for _ in quiz]
 
     state = 'practice'
     timer = 0
 
 
 def new_learn():
-    global quiz, quiz_queue, shown
+    global quiz, quiz_queue, correct
 
-    not_shown = [i for i, s in enumerate(shown) if not s]
-    if not not_shown:
+    not_correct = [i for i, _, _ in quiz if i not in correct[1]]
+    if len(not_correct) == 0:
         print('user has been shown all')
         quiz_queue.append(random.choice(quiz))
     else:
-        quiz_queue.append(quiz[random.choice(not_shown)])
+        i = random.choice(not_correct)
+        for q in quiz:
+            if q[0] == i:
+                quiz_queue.append(q)
+                break
+        else:
+            raise IndexError(f"index '{i}' not in quiz")
 
 
 def guess(option):
@@ -311,36 +313,9 @@ while run:
             if not last_correct:
                 quiz_queue.insert(2, quiz_queue[0])
 
-            found = False
-            for q in quiz_schedule:
-                if quiz_queue[0][0] == q[0]:
-                    found = True
-            if not found:
-                if last_correct:
-                    if quiz_queue[0][0] not in correct_streak:
-                        correct_streak[quiz_queue[0][0]] = 0
-                    else:
-                        correct_streak[quiz_queue[0][0]] += 1
-
-                    # TODO: crashes?????
-                    quiz_schedule.append([quiz_queue[0][0],
-                                          min(Q_DELAY[correct_streak[quiz_queue[0][0]]], len(Q_DELAY) - 1)])
-                else:
-                    correct_streak[quiz_queue[0][0]] = 0
-
-            i = 0
-            while i < len(quiz_schedule):
-                if quiz_schedule[i][1] < 1:
-                    quiz_queue.append(quiz_queue[0])
-                    quiz_schedule.pop(i)
-                    i -= 1
-                else:
-                    quiz_schedule[i][1] -= 1
-                i += 1
-
             quiz_queue.pop(0)
             random.shuffle(quiz_queue[0][2])
-            print([q[0] for q in quiz_queue], quiz_schedule)
+            print([q[0] for q in quiz_queue])
 
         if timer != -1:
             if settings['mode'] == 'choice':
