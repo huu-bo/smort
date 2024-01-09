@@ -25,6 +25,8 @@ settings = {
 }
 DELAY = 2  # should be more than 1
 RATIO_CORRECT = .7
+GAME_TIME = 180
+GAME_PLAYER_SPEED = .008
 
 state = 'main'  # main, practice, practice_settings
 
@@ -69,6 +71,10 @@ q_ret = False
 
 correct = [0., {}]
 
+game_cam = 0
+game_player = 0
+game_time = GAME_TIME
+
 
 def practice(f):
     global quiz, quiz_queue, state, timer, correct
@@ -100,6 +106,16 @@ def practice(f):
 
     state = 'practice'
     timer = 0
+
+
+def game():
+    if settings['mode'] != 'game':
+        raise ValueError
+
+    global game_cam, game_player, game_time
+    game_cam = .3
+    game_player = .5
+    game_time = GAME_TIME
 
 
 def new_learn():
@@ -252,7 +268,11 @@ while run:
 
                     if event.key == pygame.K_m:
                         settings['mode'] = 'type'
-                else:
+                    if event.key == pygame.K_g:
+                        settings['mode'] = 'game'
+                        game()
+
+                elif settings['mode'] == 'type':
                     if event.key == pygame.K_RETURN and timer == 0:
                         guess(typing)
                         typing = ''
@@ -262,6 +282,12 @@ while run:
                         settings['mode'] = 'choice'
                     else:
                         typing += event.unicode
+
+                elif settings['mode'] == 'game':
+                    pass
+
+                else:
+                    assert False, settings['mode']
 
                 if event.key == pygame.K_ESCAPE:
                     state = 'main'
@@ -332,8 +358,51 @@ while run:
                     screen.blit(font.render(option, True, (255, 255, 255)), (0, y))
 
                     y += height + 5
-            else:
+
+            elif settings['mode'] == 'type':
                 screen.blit(font.render(typing + '|', True, (255, 255, 255)), (100, 200))
+
+            elif settings['mode'] == 'game':
+                width = screen.get_width() / len(quiz_queue[0][2])
+                height = big_font.get_height()
+                x = 0
+                y = game_cam * screen.get_height()
+                for choice in quiz_queue[0][2]:
+                    pygame.draw.rect(screen, (255, 255, 255), (x, y, 1, height))
+                    screen.blit(font.render(choice, True, (255, 255, 255)), (x, y))
+                    x += width
+
+                game_cam += 1 / game_time
+
+                keys = pygame.key.get_pressed()
+                if keys[pygame.K_a] or keys[pygame.K_LEFT]:
+                    game_player -= GAME_PLAYER_SPEED
+                if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
+                    game_player += GAME_PLAYER_SPEED
+
+                if game_player < 0:
+                    game_player = 0
+                if game_player >= 1:
+                    game_player = 1
+
+                px = game_player * screen.get_width()
+                py = screen.get_height() - height
+                pygame.draw.rect(screen, (255, 255, 255), (px, py, 1, height))
+
+                if game_cam >= 1:
+                    g = quiz_queue[0][2][int(px // width)]
+                    guess(g)
+                    game_cam = 0
+
+                    if last_correct:
+                        game_time -= 10
+                    else:
+                        game_time += 10
+                    print(game_time)
+
+            else:
+                assert False, settings['mode']
+
         elif timer == -1:
             screen.blit(font.render(quiz_queue[0][1], True, (100, 255, 100)), (100, 200))
 
