@@ -140,9 +140,6 @@ def guess(option):
     if option == quiz_queue[0][1]:
         timer = DELAY
         last_correct = True
-    elif settings['mode'] == 'type' and SequenceMatcher(None, option, quiz_queue[0][1]).ratio() > RATIO_CORRECT:
-        timer = DELAY
-        last_correct = True
     else:
         timer = -1
         last_correct = False
