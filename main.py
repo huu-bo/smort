@@ -227,6 +227,8 @@ def host_(q, t: bool):
               host.get_html(q[QS.DRAW_NAME], body, head=head))
 
 
+mouse_scroll = 0
+
 pre_mouse_press = (False, False, False)
 # font = pygame.font.SysFont('ubuntu', size[1] // 30)
 font = pygame.font.Font('font/ubuntu.ttf', size[1] // 30)
@@ -244,6 +246,9 @@ while run:
             run = False
         elif event.type == pygame.VIDEORESIZE:
             size = (event.w, event.h)
+
+        elif event.type == pygame.MOUSEWHEEL:
+            mouse_scroll += event.precise_y
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN and timer == -1 and state == 'practice':
@@ -313,7 +318,7 @@ while run:
     mouse_click = [mouse_press[i] and not pre_mouse_press[i] for i in range(3)]
 
     if state == 'main':
-        draw_files(qs, 0, 0, q_selection, q_ret)
+        draw_files(qs, mouse_scroll, 0, q_selection, q_ret)
 
     elif state == 'practice':
         if not quiz_queue:
